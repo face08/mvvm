@@ -1,3 +1,9 @@
+/**
+ *
+ * @param el dom元素
+ * @param vm    vm对象
+ * @constructor
+ */
 function Compile(el, vm) {
     this.$vm = vm;
     this.$el = this.isElementNode(el) ? el : document.querySelector(el);
@@ -27,6 +33,7 @@ Compile.prototype = {
         this.compileElement(this.$fragment);
     },
 
+    // 编译元素
     compileElement: function(el) {
         var childNodes = el.childNodes,
             me = this;
@@ -48,12 +55,15 @@ Compile.prototype = {
         });
     },
 
+    // 编译：检查属性，如果有指令，执行指令
     compile: function(node) {
         var nodeAttrs = node.attributes,
             me = this;
 
+        // 遍历属性
         [].slice.call(nodeAttrs).forEach(function(attr) {
             var attrName = attr.name;
+            // 指令
             if (me.isDirective(attrName)) {
                 var exp = attr.value;
                 var dir = attrName.substring(2);
@@ -70,6 +80,7 @@ Compile.prototype = {
         });
     },
 
+    编译文本
     compileText: function(node, exp) {
         compileUtil.text(node, this.$vm, exp);
     },
@@ -93,6 +104,7 @@ Compile.prototype = {
 
 // 指令处理集合
 var compileUtil = {
+    // 指令
     text: function(node, vm, exp) {
         this.bind(node, vm, exp, 'text');
     },
@@ -121,11 +133,13 @@ var compileUtil = {
         this.bind(node, vm, exp, 'class');
     },
 
+    // 指令下一步处理：绑定watcher，
     bind: function(node, vm, exp, dir) {
         var updaterFn = updater[dir + 'Updater'];
 
         updaterFn && updaterFn(node, this._getVMVal(vm, exp));
 
+        // 添加watcher
         new Watcher(vm, exp, function(value, oldValue) {
             updaterFn && updaterFn(node, value, oldValue);
         });
@@ -141,6 +155,7 @@ var compileUtil = {
         }
     },
 
+    // 获取vm的值
     _getVMVal: function(vm, exp) {
         var val = vm;
         exp = exp.split('.');
@@ -150,6 +165,7 @@ var compileUtil = {
         return val;
     },
 
+    // 设置vm的值
     _setVMVal: function(vm, exp, value) {
         var val = vm;
         exp = exp.split('.');
@@ -165,6 +181,7 @@ var compileUtil = {
 };
 
 
+// 指令对应的处理函数
 var updater = {
     textUpdater: function(node, value) {
         node.textContent = typeof value == 'undefined' ? '' : value;
