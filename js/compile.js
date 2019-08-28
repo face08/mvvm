@@ -80,7 +80,7 @@ Compile.prototype = {
         });
     },
 
-    编译文本
+    // 编译文本
     compileText: function(node, exp) {
         compileUtil.text(node, this.$vm, exp);
     },
