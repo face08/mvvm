@@ -45,6 +45,7 @@ MVVM.prototype = {
         var computed = this.$options.computed;
         if (typeof computed === 'object') {
             Object.keys(computed).forEach(function (key) {
+                // 添加到me===this上
                 Object.defineProperty(me, key, {
                     get: typeof computed[key] === 'function'
                         ? computed[key]
